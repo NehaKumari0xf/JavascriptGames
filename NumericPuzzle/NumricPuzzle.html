@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+        <script>
+            var puzzData=[-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1];
+            function loadPuzzle()
+            {
+                //generate 16 unique random numbers  between 0 and 15, and store in array puzzData
+                var i=0;
+                var j,found;
+                for(i=0;i<=15;i+=1)
+                {
+                    found=false;
+                    do
+                    {
+                        found=false;
+                        //get a random number betweem 0 and 15
+                        var rn=Math.round(Math.random()*15);
+                        //check this number is available in list ot not
+                        for(j=0;j<i;j+=1)
+                        {
+                            if(puzzData[j]==rn)
+                            {
+                                found=true;
+                                break;
+                            }
+                        }
+                    }
+                    while(found);
+                    //accept the generated random number at next element
+                    puzzData[i]=rn;
+                }
+
+                //prepare 15 buttons in a 4 row 4 columns
+                var trtd="";
+                for(i=0;i<4;i+=1)
+                {
+                    trtd=trtd+"<tr>";
+                        for(j=0;j<4;j++)
+                        {
+                            trtd=trtd+"<td>";
+                                var pd=puzzData[i*4+j];
+                                if(pd!=0)
+                                {
+                                    var pds=pd+"";
+                                    if(pds.length==1)
+                                    pds="&nbsp;"+pds;
+
+                                    trtd=trtd+'<button class="btn btn-primary btn-lg" style="width:100px;height:100px;" onclick="shiftBtn('+pds+');">'+pds+"</button>";
+                                }
+                            trtd=trtd+"</td>";
+                        }
+                    trtd=trtd+"</tr>";
+                }
+                //put trtd eement in puzzContainer
+                document.getElementById("puzzContainer").innerHTML=trtd;
+            }
+        
+            function shiftBtn(sBtnNo)
+            {
+                //alert("You have selected "+btnNo+" to shift");
+                var btnNo=parseInt(sBtnNo);
+                //find its position in puzzData
+                var pos=0;
+                for(pos=0;pos<=15;pos+=1)
+                {
+                    if(puzzData[pos]==btnNo)
+                    break;
+                }
+                //alert("Seleted button is at "+pos+ "position");
+                //find 2d index of selected position
+                var row=Math.floor(pos/4);
+                var col=pos%4;
+                var shiftPosition=-1;
+                //alert("Row="+row+", col="+col);
+                //check for top adjacent cell
+                if(row-1!=-1&&shiftPosition==-1)
+                {
+                    //check top adjacent cell is empty or not
+                    if(puzzData[(row-1)*4+col]==0)
+                    shiftPosition=(row-1)*4+col;
+                }
+                if(col+1!=4&&shiftPosition==-1)//check right adjacent cell 
+                {
+                    if(puzzData[row*4+(col+1)]==0)
+                    shiftPosition=row*4+(col+1);
+                 }
+                  if(row+1!=4&&shiftPosition==-1)
+                 {
+                    if(puzzData[(row+1)*4+col]==0)
+                    shiftPosition=(row+1)*4+col;
+                 }
+                  if(col-1!=-1&&shiftPosition==-1)
+                 {
+                    if(puzzData[row*4+(col-1)]==0)
+                    shiftPosition=row*4+(col-1);
+                 }
+                 if(shiftPosition!=-1)
+                 {
+
+                    //swap the pos element data with shift position data
+                    var t=puzzData[pos];
+                    puzzData[pos]=puzzData[shiftPosition];
+                    puzzData[shiftPosition]=t;
+                    //now change the puzz container content with new puzz data value
+                    //prepare 15 buttons in a 4 row 4 columns
+                var trtd="";
+                for(i=0;i<4;i+=1)
+                {
+                    trtd=trtd+"<tr>";
+                        for(j=0;j<4;j++)
+                        {
+                            trtd=trtd+"<td>";
+                                var pd=puzzData[i*4+j];
+                                if(pd!=0)
+                                {
+                                    var pds=pd+"";
+                                    if(pds.length==1)
+                                    pds="&nbsp;"+pds;
+
+                                    trtd=trtd+'<button class="btn btn-primary btn-lg" style="width:100px;height:100px;" onclick="shiftBtn('+pds+');">'+pds+"</button>";
+                                }
+                            trtd=trtd+"</td>";
+                        }
+                    trtd=trtd+"</tr>";
+                }
+                //put trtd eement in puzzContainer
+                document.getElementById("puzzContainer").innerHTML=trtd;
+                 }
+                 else
+                 alert("this cell can't be shifted");
+
+            }
+        </script>
+</head>
+
+<body onload="loadPuzzle();">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3">
+
+            </div>
+            <div class="col-sm-6">
+                <table id="puzzContainer">
+
+                </table>
+            </div>
+            <div class="col-sm-3"></div>
+        </div>
+    </div>
+
+</body>
+
+</html>
+<!--
+        rowNumber*TotalCols+ColumnNo
+0   00 0*4+0=0
+1   01 0*4+1=1
+2   02 0*4+2=4
+3   03 0*4+3=3
+4   10 1*4+0=1
+5   11 1*4+1=5
+6   12 1*4+2=6
+7   13 1*4+3=7
+8   20 2*4+0=8
+9   21 2*4+1=9
+10  22 2*4+2=10
+11  23 2*4+3=11
+12  30 3*4+0=12
+13  31 3*4+1=13
+14  32 3*4+2=14
+15  33 3*4+3=15
+-->
